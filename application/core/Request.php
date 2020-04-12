@@ -1,4 +1,5 @@
 <?php
+
     class Request{
         public function isPost(){
             // $_SERVER['REQUEST_METHOD']:ページにアクセスする際に使用されたリクエストのメソッド名
