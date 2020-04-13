@@ -84,13 +84,19 @@
             // Routerクラスのresolveメソッドでルーティングパラメータを取得し、コントローラー名とアクション名を特定
             $params = $this->router->resolve($this->request->getPathInfo());
             if($params === false){
-                // todo-A
+                throw new HttpNotFoundException('No route found for ' . $this->request->getPathInfo());
             }
 
             $controller = $params['controller'];
             $action = $params['action'];
 
             $this->runAction($controller, $action, $params);
+
+            try{
+                // ...
+            } catch (HttpNotFoundException $e) {
+                $this->render404page($e);
+            }
 
             $this->response->send();
         }
@@ -100,7 +106,7 @@
             $controller_class = ucfirst($controller_name) . 'Controller';
             $controller = $this->findController($controller_class);
             if ($controller === false){
-                // todo-B
+                throw new HttpNotFoundException($controller_class . 'controller is not found.');
             }
 
             $content = $controller->run($action, $params);
@@ -125,6 +131,31 @@
 
             return new $controller_class($this);
         
+        }
+
+        protected function render404Page($e){
+            $this->response->setStatusCode(404, 'Not Found');
+            $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
+            $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+
+            $this->response->setContent(<<<EOF
+
+                <!DOCTYPE>
+                <html lang="ja">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>404</title>
+                </head>
+                <body>
+                    {$message}
+                </body>
+                </html>
+
+                EOF
+
+            );
+
         }
 
     }
