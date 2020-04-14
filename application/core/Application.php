@@ -1,6 +1,6 @@
 <?php
 
-    abstract class Application{
+    abstract class Application {
 
         protected $debug = false;
         protected $request;
@@ -8,31 +8,37 @@
         protected $session;
         protected $db_manager;
 
-        public function __construct($debug = false){
+        public function __construct($debug = false) {
+
             $this->setDebugMode($debug);
             $this->initialize();
             $this->configure();
+        
         }
 
-        protected function setDebugMode($debug){
-            if ($debug){
+        protected function setDebugMode($debug) {
+        
+            if ($debug) {
                 $this->debug = true;
                 // エラー出力をONにする
                 ini_set('display_errors', 1);
                 // 全てのエラーを表示する
                 error_reporting(-1);
-            } else{
+            } else {
                 $this->debug = false;
                 ini_set('display_errors', 0);
             }
+
         }
 
-        protected function initialize(){
+        protected function initialize() {
+
             $this->request = new Request();
             $this->response = new Response();
             $this->session = new Session();
             $this->db_manager = new DbManager();
             $this->router = new Router($this->registerRoutes());
+        
         }
 
         protected function Configure(){
@@ -43,47 +49,66 @@
 
         abstract protected function registerRoutes();
 
-        public function isDebugMode(){
+        public function isDebugMode() {
+
             return $this->debug;
+        
         }
 
-        public function getRequest(){
+        public function getRequest() {
+        
             return $this->request;
+        
         }
 
-        public function getResponse(){
+        public function getResponse() {
+        
             return $this->response;
+        
         }
 
-        public function getSession(){
+        public function getSession() {
+            
             return $this->session;
+        
         }
 
-        public function getDbManager(){
+        public function getDbManager() {
+        
             return $this->db_manager;
+        
         }
 
-        public function getControllerDir(){
+        public function getControllerDir() {
+
             return $this->getRootDir() . '/controllers';
+        
         }
 
-        public function getViewDir(){
+        public function getViewDir() {
+
             return $this->getRootDir() . '/views';
+        
         }
 
-        public function getModeDir(){
+        public function getModeDir() {
+        
             return $this->getRootDir() . 'models';
+        
         }
 
-        public function getWebDir(){
+        public function getWebDir() {
+
             return $this->getRootDir() . '/web';
+        
         }
 
         // Routerからコントローラーを特定し、レスポンスの送信を行うまで管理するメソッド
-        public function run(){
+        public function run() {
+
             // Routerクラスのresolveメソッドでルーティングパラメータを取得し、コントローラー名とアクション名を特定
             $params = $this->router->resolve($this->request->getPathInfo());
-            if($params === false){
+            if($params === false) {
                 throw new HttpNotFoundException('No route found for ' . $this->request->getPathInfo());
             }
 
@@ -92,38 +117,42 @@
 
             $this->runAction($controller, $action, $params);
 
-            try{
+            try {
                 // ...
             } catch (HttpNotFoundException $e) {
                 $this->render404page($e);
             }
 
             $this->response->send();
+        
         }
 
         // 実際にアクションを実行するメソッド
-        public function runAction($controller_name, $action, $params = array()){
+        public function runAction($controller_name, $action, $params = array()) {
+
             $controller_class = ucfirst($controller_name) . 'Controller';
             $controller = $this->findController($controller_class);
-            if ($controller === false){
+            if ($controller === false) {
                 throw new HttpNotFoundException($controller_class . 'controller is not found.');
             }
 
             $content = $controller->run($action, $params);
 
             $this->response->setContent($content);
+        
         }
 
         // runActionメソッドの中でコントローラークラスを生成するメソッド
-        protected function findController($controller_class){
-            if (!class_exists($controller_class)){
+        protected function findController($controller_class) {
+
+            if (!class_exists($controller_class)) {
                 $controller_file = $this->getControllerDir() . '/' . $controller_class . '.php';
-                if (!is_readable($controller_file)){
+                if (!is_readable($controller_file)) {
                     return false;
                 } else {
                     require_once $controller_file;
 
-                    if (!class_exists($controller_class)){
+                    if (!class_exists($controller_class)) {
                         return false;
                     }
                 }
@@ -133,7 +162,8 @@
         
         }
 
-        protected function render404Page($e){
+        protected function render404Page($e) {
+            
             $this->response->setStatusCode(404, 'Not Found');
             $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
             $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');

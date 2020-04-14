@@ -1,10 +1,11 @@
 <?php
-    class DbManager{
+    class DbManager {
         
         protected $connections = array();
 
         // 接続情報を入力するメソッド
-        public function connect($name, $params){
+        public function connect($name, $params) {
+           
             $params = array_merge(array(
                 'dsn'       => null,
                 'user'      => '',
@@ -26,24 +27,29 @@
         }
 
         // 接続情報がない場合に現在の接続条件を反映するメソッド
-        public function getConnection($name = null){
+        public function getConnection($name = null) {
+
             if (is_null($name)){
                 return current($this->connections);
             }
 
             return $this->connections[$name];
+
         }
 
         protected $repository_connection_map = array();
 
         // 最初に指定したコネクション以外の物を利用する場合に用いるメソッドs
-        public function setRepositoryConnectionMap($repository_name, $name){
+        public function setRepositoryConnectionMap($repository_name, $name) {
+
             $this->repository_connection_map[$repository_name] = $name;
+
         }
         
         // 最初に指定したコネクション以外の物を利用する場合に用いるメソッドs
-        public function getConnectionForRepository($repository_name){
-            if (isset($this->repository_connection_map[$repository_name])){
+        public function getConnectionForRepository($repository_name) {
+
+            if (isset($this->repository_connection_map[$repository_name])) {
                 $name = $this->repository_connection_map[$repository_name];
                 $con = $this->getConnection($name);
             } else {
@@ -51,13 +57,15 @@
             }
 
             return $con;
+
         }
 
         // Repositoryクラスの管理
         protected $repositories = array();
 
-        public function get($repository_name){
-            if (!isset($this->repositories[$repository_name])){
+        public function get($repository_name) {
+
+            if (!isset($this->repositories[$repository_name])) {
                 $repository_class = $repository_name . 'Repository';
                 $con =  $this->getConnectionForRepository($repository_name);
 
@@ -68,16 +76,19 @@
             }
 
             return $this->repositories[$repository_name];
+
         }
 
-        public function __destruct(){
-            foreach ($this->repositories as $repository){
+        public function __destruct() {
+
+            foreach ($this->repositories as $repository) {
                 unset($repository);
             }
 
-            foreach ($this->connections as $con){
+            foreach ($this->connections as $con) {
                 unset($con);
             }
+            
         }
 
     }

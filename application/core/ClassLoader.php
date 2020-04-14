@@ -8,27 +8,33 @@
 // ①クラスは「クラス名.php」というファイル名で保存する
 // ②クラスはcoreディレクトリおよびmodelsディレクトリに配置する
 
-class ClassLoader
-{
+class ClassLoader {
+
     protected $dirs;
     
-    public function register(){
+    public function register() {
+    
         // 指定した関数を__autoload()の実装として登録
         spl_autoload_register(array($this, 'loadClass'));
+    
     }
 
-    public function registerDir($dir){
+    public function registerDir($dir) {
+    
         $this->dirs[] = $dir;
+    
     }
 
-    public function loadClass($class){
-        foreach ($this->dirs as $dir){
+    public function loadClass($class) {
+
+        foreach ($this->dirs as $dir) {
             $file = $dir . '/' . $class . '.php';
-            if (is_readable($file)){
+            if (is_readable($file)) {
                 require $file;
                 return;
             }
         }
+
     }
 
 }

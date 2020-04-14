@@ -1,4 +1,5 @@
 <?php
+
     // オートロードの設定
     require 'core/ClassLoader.php';
 
