@@ -7,6 +7,7 @@
         protected $response;
         protected $session;
         protected $db_manager;
+        protected $login_action = array();
 
         public function __construct($debug = false) {
 
@@ -121,6 +122,9 @@
                 // ...
             } catch (HttpNotFoundException $e) {
                 $this->render404page($e);
+            } catch (UnauthorizedActionException $e) {
+                list($controller, $action) = $this->login_action;
+                $this->runAction($controller, $action);
             }
 
             $this->response->send();
@@ -163,7 +167,7 @@
         }
 
         protected function render404Page($e) {
-            
+
             $this->response->setStatusCode(404, 'Not Found');
             $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
             $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
