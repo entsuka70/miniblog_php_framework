@@ -36,7 +36,91 @@
             $content = $this->$action_method($params);
 
             return $content;
+
+        }
+
+        // Viewファイルのレンダリング処理
+        protected function render($variables = array(), $template = null, $layout = 'layout') {
+
+            $defaults = array(
+                'request'   => $this->request,
+                'base_url'  => $this->request->getBaseUrl(),
+                'session'   => $this->session,
+            );
+
+            $view = new View($this->application->getViewDir(), $defaults);
+
+            if(is_null($template)) {
+                $template = $this->action_name;
+            }
+
+            $path = $this->controller_name . '/' . $template;
+
+            return $view->render($path, $variables, $layout);
+
+        }
+
+        // ページが存在しない時のエラー処理
+        protected function forward404() {
+
+            throw new HttpNotFoundException('Forwarded 404 page from ' . $this->controller_name . '/' . $this->action_name);
+        
+        }
+
+        // URLリダイレクト処理
+        protected function redirect($url) {
             
+            if(!preg_match('#https?://#', $url)) {
+                $protocol = $this->request->isSsl() ? 'https://' : 'http://';
+                $host = $this->request->getHost();
+                $base_url = $this->request->getBaseUrl();
+
+                $url = $protocol . $host . $base_url . $url;
+            }
+
+            $this->response->setStatusCode(302, 'Found');
+            $this->response->setHttpHeader('Location', $url);
+
+        }
+
+        // CSRF対策
+        // トークンを生成し、サーバー上に保持するセッション格納
+        protected function generateCsrfToken($form_name) {
+
+            $key = 'csrf_tokens/' . $form_name;
+            $tokens = $this->session->get($key, array());
+            if (count($tokens) >= 10) {
+                // array_shift:配列の先頭から要素をひとつ取り出す
+                array_shift($tokens);
+            }
+
+            // sha1:文字列のsha1ハッシュを計算する
+            // session_id:現在のセッションIDを取得または設定する
+            // microtime:現在のUnixタイムスタンプをマイクロ秒まで返す
+            $token = sha1($form_name . session_id() . microtime());
+            $tokens[] = $token;
+
+            $this->session->set($key, $tokens);
+
+            return $token;
+
+        }
+
+        // CSRF対策
+        // セッション上に格納されているトークンからPOSTされたトークンを探すメソッド
+        protected function checkCsrfToken($form_name, $token) {
+
+            $key = 'csrf_tokens/' . $form_name;
+            $tokens = $this->session->get($key, array());
+
+            // array_search:指定した値を配列で検索し、見つかった場合に対応する最初のキーを返す
+            if(false !== ($pos = array_search($token, $tokens, true))) {
+                unset($tokens[$pos]);
+                $this->session->set($key, $tokens);
+            }
+
+            return true;
+
         }
 
     }
