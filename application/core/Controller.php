@@ -65,7 +65,7 @@
 
             $view = new View($this->application->getViewDir(), $defaults);
 
-            if(is_null($template)) {
+            if (is_null($template)) {
                 $template = $this->action_name;
             }
 
@@ -85,7 +85,7 @@
         // URLリダイレクト処理
         protected function redirect($url) {
             
-            if(!preg_match('#https?://#', $url)) {
+            if (!preg_match('#https?://#', $url)) {
                 $protocol = $this->request->isSsl() ? 'https://' : 'http://';
                 $host = $this->request->getHost();
                 $base_url = $this->request->getBaseUrl();
@@ -129,15 +129,17 @@
             $tokens = $this->session->get($key, array());
 
             // array_search:指定した値を配列で検索し、見つかった場合に対応する最初のキーを返す
-            if(false !== ($pos = array_search($token, $tokens, true))) {
+            if (false !== ($pos = array_search($token, $tokens, true))) {
                 unset($tokens[$pos]);
                 $this->session->set($key, $tokens);
+                
+                return true;
             }
 
-            return true;
+            return false;
 
         }
 
+
     }
 
-?>

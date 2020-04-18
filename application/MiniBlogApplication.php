@@ -23,9 +23,9 @@
         protected function configure() {
 
             $this->db_manager->connect('master', array(
-                'dsn' => 'mysql:dbname=miniblog_phpframework;host=localhost',
+                'dsn' => 'mysql:dbname=miniblog_phpframework;host=localhost;charset=utf8',
                 'user' => 'root',
-                'password' => '',
+                'password' => 'root',
             ));
 
         }
@@ -33,4 +33,3 @@
 
     }
 
-?>

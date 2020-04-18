@@ -8,4 +8,3 @@
     $loader->registerDir(dirname(__FILE__) . '/models');
     $loader->register();
 
-?>

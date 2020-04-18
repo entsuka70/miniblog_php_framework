@@ -2,4 +2,3 @@
 
     class UnauthorizedActionException extends Exception {};
 
-?>

@@ -60,18 +60,21 @@
         public function getRequestUri() {
 
             // $_SERVER['REQUEST_URI']：ページにアクセスするために指定された URI
+            // 例:/index.html
             return $_SERVER['REQUEST_URI'];
         
         }
 
         public function getBaseUrl() {
         
+            // $_SERVER['SCRIPT_NAME']:ドメイン下のディレクトリからファイル名までのパス
+            // 例:/foo/filename.php
             $script_name = $_SERVER['SCRIPT_NAME'];
             $request_uri = $this->getRequestUri();
 
             if (0 === strpos($request_uri, $script_name)) {
                 return $script_name;
-            } elseif (0 === strpos($request_uri, $script_name)) {
+            } elseif (0 === strpos($request_uri, dirname($script_name))) {
                 // $script_nameの最後から'/'を削除
                 return rtrim(dirname($script_name), '/');
             }
@@ -96,4 +99,3 @@
 
     }
 
-?>

@@ -2,6 +2,9 @@
     class DbManager {
         
         protected $connections = array();
+        protected $repository_connection_map = array();
+        // Repositoryクラスの管理
+        protected $repositories = array();
 
         // 接続情報を入力するメソッド
         public function connect($name, $params) {
@@ -29,15 +32,13 @@
         // 接続情報がない場合に現在の接続条件を反映するメソッド
         public function getConnection($name = null) {
 
-            if (is_null($name)){
+            if (is_null($name)) {
                 return current($this->connections);
             }
 
             return $this->connections[$name];
 
         }
-
-        protected $repository_connection_map = array();
 
         // 最初に指定したコネクション以外の物を利用する場合に用いるメソッドs
         public function setRepositoryConnectionMap($repository_name, $name) {
@@ -60,8 +61,6 @@
 
         }
 
-        // Repositoryクラスの管理
-        protected $repositories = array();
 
         public function get($repository_name) {
 
@@ -92,5 +91,3 @@
         }
 
     }
-
-?>
