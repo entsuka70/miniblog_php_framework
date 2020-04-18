@@ -5,6 +5,8 @@
         public function signupAction() {
 
             return $this->render(array(
+                'user_name' => '',
+                'password' => '',
                 '_token' => $this->generateCsrfToken('account/signup'),
             ));
         }
