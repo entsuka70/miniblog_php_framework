@@ -21,7 +21,7 @@
         public function fetchAllPersonalArchivesByUserId($user_id) {
 
             $sql = "SELECT a.*, u.user_name
-                    FROM status a LETT JOIN user u ON a.user_id = u.id
+                    FROM status a LEFT JOIN user u ON a.user_id = u.id
                     WHERE u.id = :user_id
                     ORDER BY a.created_at DESC
                     ";
@@ -33,7 +33,7 @@
         // ユーザーIDに一致する投稿を投稿びの降順に全権取得
         public function  fetchAllByUserId($user_id) {
 
-            $sqk = "SELECT a.*, u.user_name
+            $sql = "SELECT a.*, u.user_name
                     FROM status a LEFT JOIN user u ON a.user_id = u.id
                     WHERE u.id = :user_id
                     ORDER BY a.created_at DESC
