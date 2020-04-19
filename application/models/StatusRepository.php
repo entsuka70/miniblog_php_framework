@@ -55,7 +55,7 @@
                     ";
 
             return $this->fetch($sql, array(
-                ';id' => $id,
+                ':id' => $id,
                 ':user_name' => $user_name,
             ));
         }
